@@ -1,0 +1,11 @@
+{
+  "name": "sdc-nfsserver",
+  "description": "SmartDataCenter NFS Server",
+  "version": "1.0.0",
+  "author": "Joyent (joyent.com)",
+  "private": true,
+  "dependencies": {
+    "sdc-nfs": "git+https://github.com/joyent/sdc-nfs.git#master"
+  },
+  "license": "MPL-2.0"
+}
