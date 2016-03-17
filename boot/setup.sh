@@ -43,11 +43,9 @@ mkdir -p /exports
 # set mountpoint
 UUID=$(zonename)
 DATASET=zones/${UUID}/data
-VOLUME="VolumeName" # TODO: determine from metadata
 
+# This also mounts the dataset
 zfs set mountpoint=/exports ${DATASET}
-
-mkdir -p /exports/${VOLUME}
 
 # All done, run boilerplate end-of-setup
 sdc_setup_complete

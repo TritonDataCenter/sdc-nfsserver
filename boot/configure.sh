@@ -16,6 +16,25 @@ set -o xtrace
 echo "Updating SMF manifest"
 $(/opt/local/bin/gsed -i"" -e "s/@@PREFIX@@/\/opt\/smartdc\/nfsserver/g" /opt/smartdc/nfsserver/smf/nfsserver.xml)
 
+echo "Creating Volume Directories"
+volumes=0
+for volume in $(mdata-get export-volumes | json -a | grep "^[a-zA-Z0-9\-\_]*$"); do
+    volumes=$((${volumes} + 1))
+    mkdir -p /exports/${volume}
+done
+
+if [[ ${volumes} -lt 1 ]]; then
+    echo "FATAL: no volumes to export! (customer_metadata.export-volumes)" >&2
+    exit 2
+fi
+
+echo "Importing rpc/bind.xml"
+svccfg import /lib/svc/manifest/network/rpc/bind.xml
+
+echo "Enabling remote mounting"
+svccfg -s bind setprop config/local_only=false
+svcadm refresh bind
+
 echo "Importing nfsserver.xml"
 /usr/sbin/svccfg import /opt/smartdc/nfsserver/smf/nfsserver.xml
 

@@ -37,7 +37,7 @@
 	<exec_method
 		type="method"
 		name="start"
-		exec="@@PREFIX@@/build/node/bin/node @@PREFIX@@/node_modules/server.js -f @@PREFIX@@/etc/config.json &amp;"
+		exec="@@PREFIX@@/build/node/bin/node @@PREFIX@@/node_modules/sdc-nfs/server.js -f @@PREFIX@@/etc/config.json &amp;"
 		timeout_seconds="30" />
 
 	<exec_method
