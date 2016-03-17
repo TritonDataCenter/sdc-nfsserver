@@ -16,7 +16,15 @@ set -o xtrace
 echo "Updating SMF manifest"
 $(/opt/local/bin/gsed -i"" -e "s/@@PREFIX@@/\/opt\/smartdc\/nfsserver/g" /opt/smartdc/nfsserver/smf/nfsserver.xml)
 
-echo "Creating Volume Directories"
+# If we don't have /exports mounted, we'll bail so we don't end up mounting out
+# an empty directory accidentally.
+echo "Ensuring /exports is mounted"
+if [[ -z $(mount | grep "^/exports ") ]]; then
+    echo "FATAL: /exports is not mounted!" >&2
+    exit 2
+fi
+
+echo "Creating volume directories"
 volumes=0
 for volume in $(mdata-get export-volumes | json -a | grep "^[a-zA-Z0-9\-\_]*$"); do
     volumes=$((${volumes} + 1))
