@@ -37,15 +37,26 @@ echo "Adding log rotation"
 sdc_log_rotation_add $role /var/svc/log/*$role*.log 1g
 sdc_log_rotation_setup_end
 
-# Setup /exports
-mkdir -p /exports
+# Setup /exports and /var/tmp/sdcnfs
+mkdir -p /exports /var/tmp/sdcnfs
 
 # set mountpoint
 UUID=$(zonename)
 DATASET=zones/${UUID}/data
 
+E_DATASET=zones/${UUID}/data/exports # for NFS exports
+S_DATASET=zones/${UUID}/data/sdcnfs  # for sdcnfs state
+
+# Create the datasets if they don't exist
+for ds in ${E_DATASET} ${S_DATASET}; do
+    if ! zfs list -Ho name ${ds}; then
+        zfs create ${ds}
+    fi
+done
+
 # This also mounts the dataset
-zfs set mountpoint=/exports ${DATASET}
+zfs set mountpoint=/exports ${E_DATASET}
+zfs set mountpoint=/var/tmp/sdcnfs ${S_DATASET}
 
 # All done, run boilerplate end-of-setup
 sdc_setup_complete
