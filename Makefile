@@ -22,7 +22,7 @@ include ./tools/mk/Makefile.defs
 # on the need of your repository.
 #
 # NODE_PREBUILT_VERSION=v4.4.0
-NODE_PREBUILT_VERSION=v0.10.43
+NODE_PREBUILT_VERSION=v0.10.48
 ifeq ($(shell uname -s),SunOS)
 	# Allow building on other than sdc-minimal-multiarch-lts@15.4.1
         NODE_PREBUILT_IMAGE=18b094b0-eb01-11e5-80c1-175dac7ddf02
