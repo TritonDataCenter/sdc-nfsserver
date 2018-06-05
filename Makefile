@@ -5,7 +5,7 @@
 #
 
 #
-# Copyright (c) 2016, Joyent, Inc.
+# Copyright (c) 2018, Joyent, Inc.
 #
 
 #
@@ -21,8 +21,7 @@ include ./tools/mk/Makefile.defs
 # binary as part of the build process.  Other options are possible -- it depends
 # on the need of your repository.
 #
-# NODE_PREBUILT_VERSION=v4.4.0
-NODE_PREBUILT_VERSION=v0.10.43
+NODE_PREBUILT_VERSION=v0.10.48
 ifeq ($(shell uname -s),SunOS)
 	# Allow building on a SmartOS image other than sdc-*-multiarch 15.4.1.
 	NODE_PREBUILT_IMAGE=18b094b0-eb01-11e5-80c1-175dac7ddf02
