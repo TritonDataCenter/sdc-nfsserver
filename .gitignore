@@ -1,5 +1,7 @@
 nfsserver-pkg-*.tar.gz
+/make_stamps
 /node_modules
 /npm-debug.log
 /tmp
+bits
 build

@@ -5,13 +5,18 @@
 #
 
 #
-# Copyright (c) 2018, Joyent, Inc.
+# Copyright (c) 2019, Joyent, Inc.
 #
 
 #
 # Makefile.defs defines variables used as part of the build process.
 #
-include ./tools/mk/Makefile.defs
+ENGBLD_USE_BUILDIMAGE	= true
+ENGBLD_REQUIRE		:= $(shell git submodule update --init deps/eng)
+include ./deps/eng/tools/mk/Makefile.defs
+TOP ?= $(error Unable to access eng.git submodule Makefiles.)
+
+NAME = nfsserver
 
 #
 # Historically, Node packages that make use of binary add-ons must ship their
@@ -23,18 +28,20 @@ include ./tools/mk/Makefile.defs
 #
 NODE_PREBUILT_VERSION=v0.10.48
 ifeq ($(shell uname -s),SunOS)
-	# Allow building on a SmartOS image other than sdc-*-multiarch 15.4.1.
+	# sdc-*-multiarch 15.4.1.
 	NODE_PREBUILT_IMAGE=18b094b0-eb01-11e5-80c1-175dac7ddf02
 	NODE_PREBUILT_TAG=zone
-	include ./tools/mk/Makefile.node_prebuilt.defs
-else
-	include ./tools/mk/Makefile.node.defs
+	include ./deps/eng/tools/mk/Makefile.node_prebuilt.defs
 endif
 
-CLEAN_FILES += npm-debug.log build nfsserver-pkg-*.tar.gz
-RELEASE_TARBALL := nfsserver-pkg-$(STAMP).tar.gz
-RELSTAGEDIR := /tmp/$(STAMP)
+CLEAN_FILES += npm-debug.log build
+RELEASE_TARBALL := $(NAME)-pkg-$(STAMP).tar.gz
+RELSTAGEDIR := /tmp/$(NAME)-$(STAMP)
 ROOT := $(shell pwd)
+
+BASE_IMAGE_UUID = 04a48d7d-6bb5-4e83-8c3b-e60a99e0f48f
+BUILDIMAGE_NAME = $(NAME)
+BUILDIMAGE_DESC	= SDC NFS Server
 
 #
 # Repo-specific targets
@@ -59,31 +66,25 @@ release: all deps
 	@cp -R $(ROOT)/deps/sdc-scripts/* $(RELSTAGEDIR)/root/opt/smartdc/boot/
 	@cp -R $(ROOT)/boot/* $(RELSTAGEDIR)/root/opt/smartdc/boot/
 	@chmod 755 $(RELSTAGEDIR)/root/opt/smartdc/boot/*.sh
-	(cd $(RELSTAGEDIR) && $(TAR) -zcf $(ROOT)/$(RELEASE_TARBALL) root site)
+	(cd $(RELSTAGEDIR) && $(TAR) -I pigz -cf $(ROOT)/$(RELEASE_TARBALL) root site)
 	@rm -rf $(RELSTAGEDIR)
 
 .PHONY: publish
 publish: release
-	@if [[ -z "$(BITS_DIR)" ]]; then \
-	    echo "error: 'BITS_DIR' must be set for 'publish' target"; \
-	    exit 1; \
-	fi
-	mkdir -p $(BITS_DIR)/nfsserver
-	cp $(ROOT)/$(RELEASE_TARBALL) $(BITS_DIR)/nfsserver/$(RELEASE_TARBALL)
+	mkdir -p $(ENGBLD_BITS_DIR)/nfsserver
+	cp $(ROOT)/$(RELEASE_TARBALL) $(ENGBLD_BITS_DIR)/$(NAME)/$(RELEASE_TARBALL)
 
 #
 # Target definitions.  This is where we include the target Makefiles for
 # the "defs" Makefiles we included above.
 #
 
-include ./tools/mk/Makefile.deps
+include ./deps/eng/tools/mk/Makefile.deps
 
 ifeq ($(shell uname -s),SunOS)
-	include ./tools/mk/Makefile.node_prebuilt.targ
-else
-	include ./tools/mk/Makefile.node.targ
+	include ./deps/eng/tools/mk/Makefile.node_prebuilt.targ
 endif
 
-include ./tools/mk/Makefile.targ
+include ./deps/eng/tools/mk/Makefile.targ
 
 sdc-scripts: deps/sdc-scripts/.git
