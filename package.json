@@ -5,7 +5,7 @@
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
-    "sdc-nfs": "git+https://github.com/joyent/sdc-nfs.git#master"
+    "sdc-nfs": "git+https://github.com/joyent/sdc-nfs.git#ec11f2b259e3272eed7ddb761fbc01bca229c4df"
   },
   "license": "MPL-2.0"
 }
